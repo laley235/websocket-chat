@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+</head>
+<body>
+    <h1>WebSocket Chat</h1>
+    <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto;"></div>
+    <input type="text" id="message-input" placeholder="Enter your message" style="width: 80%;">
+    <button id="send-btn">Send</button>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // 创建 WebSocket 连接
+        const socket = new WebSocket('ws://localhost:8081');
+
+        // 监听连接打开事件
+        socket.addEventListener('open', () => {
+            chatBox.innerHTML += '<p>Connected to WebSocket server.</p>';
+        });
+
+        // 监听消息事件
+        socket.addEventListener('message', (event) => {
+            chatBox.innerHTML += `<p>${event.data}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight; // 自动滚动到底部
+        });
+
+        // 发送消息
+        sendBtn.addEventListener('click', () => {
+            const message = messageInput.value;
+            if (message) {
+                socket.send(message);
+                chatBox.innerHTML += `<p><b>You:</b> ${message}</p>`;
+                messageInput.value = ''; // 清空输入框
+                chatBox.scrollTop = chatBox.scrollHeight; // 自动滚动到底部
+            }
+        });
+    </script>
+</body>
+</html>
